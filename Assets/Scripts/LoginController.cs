@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
+using static UnityEngine.GraphicsBuffer;
 
 public class LoginController : MonoBehaviour
 {
     public TMP_InputField nameInput;
-    private string serverIP = "127.0.0.1";
+    public TMP_InputField serverInput;
     private int serverPort = 8888;
 
     private bool isLoginSuccess = false;
@@ -13,10 +14,15 @@ public class LoginController : MonoBehaviour
     public void OnBtnJoinClicked()
     {
         string playerName = nameInput.text.Trim();
+        string serverIP = serverInput.text.Trim();
         if (string.IsNullOrEmpty(playerName))
         {
             Debug.LogWarning("Chưa nhập tên kìa ông ơi!");
             return;
+        }
+        if (string.IsNullOrEmpty(serverIP))
+        {
+            serverIP = "127.0.0.1";
         }
 
         // 1. Kết nối và đăng ký lắng nghe phản hồi
