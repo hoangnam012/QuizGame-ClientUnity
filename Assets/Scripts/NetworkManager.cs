@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -47,7 +47,7 @@ public class NetworkManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError($"[TCP] Lỗi kết nối: {e.Message}");
+            Debug.LogError($"[TCP] Lỗi kết nối tới {ip}:{port} - {e.Message}");
         }
     }
 

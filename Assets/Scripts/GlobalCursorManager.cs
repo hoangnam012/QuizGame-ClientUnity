@@ -41,7 +41,6 @@ public class GlobalCursorManager : MonoBehaviour
             return;
         }
 
-        CreateVirtualCursorOverlay();
         SceneManager.sceneLoaded += OnSceneLoaded;
         AttachHoverToAllButtons();
     }
@@ -167,41 +166,18 @@ public class GlobalCursorManager : MonoBehaviour
     public void ShowHandCursor(Vector2 mousePos)
     {
         s_isHovering = true;
+        Cursor.visible = true; // Luôn giữ con trỏ hiển thị, không bao giờ ẩn!
 
-        // Cập nhật vị trí Virtual Cursor Overlay
-        if (virtualCursorObj != null && virtualCursorRect != null)
-        {
-            if (mousePos != Vector2.zero)
-            {
-                virtualCursorRect.position = new Vector3(mousePos.x, mousePos.y, 0f);
-            }
-            if (!virtualCursorObj.activeSelf)
-            {
-                virtualCursorObj.SetActive(true);
-            }
-        }
-
-        // Ẩn con trỏ mặc định của OS để hiện bàn tay ảo mượt mà
-        Cursor.visible = false;
-
-        // Fallback: đồng thời gọi Cursor.SetCursor cho phần cứng nếu hỗ trợ
         Texture2D handTex = GetOrCreateHandCursorTexture();
         if (handTex != null)
         {
-            Cursor.SetCursor(handTex, new Vector2(8f, 2f), CursorMode.ForceSoftware);
+            Cursor.SetCursor(handTex, new Vector2(8f, 2f), CursorMode.Auto);
         }
     }
 
     public void ResetCursor()
     {
-        if (!s_isHovering && (virtualCursorObj == null || !virtualCursorObj.activeSelf)) return;
         s_isHovering = false;
-
-        if (virtualCursorObj != null)
-        {
-            virtualCursorObj.SetActive(false);
-        }
-
         Cursor.visible = true;
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
     }

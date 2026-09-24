@@ -1,14 +1,15 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // Bắt buộc phải có thư viện này để dùng TMP_InputField
+using TMPro;
 
 public class RoomController : MonoBehaviour
 {
     [Header("UI References")]
-    public TMP_InputField roomCodeInput; // Ô nhập mã code của ông
+    public TMP_InputField roomCodeInput;
 
-    private string selectedClass = "";
-    private string selectedSubject = "";
+    [Header("Selections")]
+    public string selectedClass = "";
+    public string selectedSubject = "";
 
     private bool isRoomCreated = false;
 
@@ -29,7 +30,7 @@ public class RoomController : MonoBehaviour
     // 3. Gắn vào nút "Tạo phòng"
     public void OnBtnCreateRoomClicked()
     {
-        string roomCode = roomCodeInput.text.Trim();
+        string roomCode = roomCodeInput != null ? roomCodeInput.text.Trim() : "";
 
         // Kiểm tra xem đã điền mã code và chọn đủ thông tin chưa
         if (string.IsNullOrEmpty(roomCode))
@@ -44,32 +45,42 @@ public class RoomController : MonoBehaviour
         }
 
         // Đăng ký nhận phản hồi từ Server
-        NetworkManager.Instance.OnMessageReceived += HandleServerResponse;
+        if (NetworkManager.Instance != null)
+        {
+            NetworkManager.Instance.OnMessageReceived -= HandleServerResponse;
+            NetworkManager.Instance.OnMessageReceived += HandleServerResponse;
 
-        // Gửi gói tin lên Server kèm luôn cái mã code tự nhập
-        // Cú pháp: CREATE_ROOM:[Mã_Code]:[Lớp]:[Môn]
-        string packet = $"CREATE_ROOM:{roomCode}:{selectedClass}:{selectedSubject}";
-        NetworkManager.Instance.SendPacket(packet);
-        Debug.Log($"[Gửi Server] {packet}");
+            // Gửi gói tin lên Server kèm luôn cái mã code tự nhập
+            // Cú pháp: CREATE_ROOM:[Mã_Code]:[Lớp]:[Môn]
+            string packet = $"CREATE_ROOM:{roomCode}:{selectedClass}:{selectedSubject}";
+            NetworkManager.Instance.SendPacket(packet);
+            Debug.Log($"[Gửi Server] {packet}");
+        }
+        else
+        {
+            Debug.LogError("NetworkManager.Instance is null!");
+        }
     }
     
     public void OnBtnJoinRoomClicked()
     {
-        string roomCode = roomCodeInput.text.Trim();
+        string roomCode = roomCodeInput != null ? roomCodeInput.text.Trim() : "";
 
-        NetworkManager.Instance.OnMessageReceived -= HandleServerResponse;
-        NetworkManager.Instance.OnMessageReceived += HandleServerResponse;
+        if (NetworkManager.Instance != null)
+        {
+            NetworkManager.Instance.OnMessageReceived -= HandleServerResponse;
+            NetworkManager.Instance.OnMessageReceived += HandleServerResponse;
 
-        string packet = $"JOIN_ROOM:{roomCode}"; 
-        NetworkManager.Instance.SendPacket(packet);
-        Debug.Log($"[Gửi Server] {packet}");
+            string packet = $"JOIN_ROOM:{roomCode}"; 
+            NetworkManager.Instance.SendPacket(packet);
+            Debug.Log($"[Gửi Server] {packet}");
+        }
     }
 
     // 4. Lắng nghe phản hồi từ Server
     private void HandleServerResponse(string message)
     {
         Debug.Log($"[RoomController Nhận] {message}");
-        // Server thấy mã chưa ai xài thì trả về "CREATE_SUCCESS"
         if (message.Contains("CREATE_SUCCESS") || message.Contains("JOIN_SUCCESS"))
         {
             Debug.Log("Vào phòng thành công, chuẩn bị chuyển Scene!");
@@ -78,12 +89,14 @@ public class RoomController : MonoBehaviour
         else if (message.Contains("ROOM_EXISTS"))
         {
             Debug.LogWarning("Mã code này đã có người xài!");
-            NetworkManager.Instance.OnMessageReceived -= HandleServerResponse;
+            if (NetworkManager.Instance != null)
+                NetworkManager.Instance.OnMessageReceived -= HandleServerResponse;
         }
         else if (message.Contains("ROOM_NOT_FOUND"))
         {
             Debug.LogWarning("Phòng không tồn tại, kiểm tra lại mã code!");
-            NetworkManager.Instance.OnMessageReceived -= HandleServerResponse;
+            if (NetworkManager.Instance != null)
+                NetworkManager.Instance.OnMessageReceived -= HandleServerResponse;
         }
     }
 
@@ -93,13 +106,20 @@ public class RoomController : MonoBehaviour
         if (isRoomCreated)
         {
             isRoomCreated = false;
-            NetworkManager.Instance.OnMessageReceived -= HandleServerResponse;
+            if (NetworkManager.Instance != null)
+                NetworkManager.Instance.OnMessageReceived -= HandleServerResponse;
 
-            // Lưu cái mã code tự đặt lại để sang Sảnh chờ in ra cho to
-            PlayerPrefs.SetString("CurrentRoomPIN", roomCodeInput.text.Trim());
+            if (roomCodeInput != null)
+            {
+                PlayerPrefs.SetString("CurrentRoomPIN", roomCodeInput.text.Trim());
+            }
 
-            // Đổi "MainScene" thành tên Scene Bảng xếp hạng / Sảnh chờ của ông
             SceneManager.LoadScene("MainScene");
         }
     }
+}
+
+// Giữ cả 2 tên class để tương thích tuyệt đối mọi nơi trong Unity
+public class RoomSetupController : RoomController
+{
 }
