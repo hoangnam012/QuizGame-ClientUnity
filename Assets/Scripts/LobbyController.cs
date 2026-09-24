@@ -125,13 +125,6 @@ public class LobbyController : MonoBehaviour
     {
         NetworkManager.Instance.SendPacket($"START_GAME:{currentRoomCode}");
     }
-
-    // ==========================================
-    // XỬ LÝ CHỌN ĐÁP ÁN: MÀU RÕ 100%, KHÔNG BỊ MỜ HAY TRONG SUỐT
-    // - ĐÚNG: Nút chuyển sang XANH LÁ ĐẬM TƯƠI 100% RÕ NÉT
-    // - SAI: Nút vừa bấm chuyển sang ĐỎ TƯƠI 100% RÕ NÉT, nút đúng sáng XANH LÁ
-    // - Cả 4 nút đều sáng rõ 100%, hoàn toàn không bị mờ đục!
-    // ==========================================
     public void OnAnswerClicked(int answerIndex)
     {
         mySelectedAnswerIndex = answerIndex;
@@ -1000,6 +993,7 @@ public class LobbyController : MonoBehaviour
             Destroy(child.gameObject);
         }
 
+        // Thanh slider xanh
         float maxScore = 1f; 
         if (hasScore && data.Length > 0 && data[0].Contains(":"))
         {
