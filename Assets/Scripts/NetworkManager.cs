@@ -116,4 +116,16 @@ public class NetworkManager : MonoBehaviour
         _stream?.Close();
         _client?.Close();
     }
+    private void OnApplicationQuit()
+    {
+        // Tự động chạy khi ông bấm Stop Play hoặc bấm X tắt game
+        Debug.Log("[TCP] Đang chủ động cúp máy trước khi thoát...");
+        Disconnect();
+    }
+
+    private void OnDestroy()
+    {
+        // Phục vụ cho việc dọn dẹp nếu chuyển cảnh lỗi
+        Disconnect();
+    }
 }

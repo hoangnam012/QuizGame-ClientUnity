@@ -13,6 +13,7 @@ public class LobbyController : MonoBehaviour
     public GameObject panelLeaderboard;
     public GameObject panelQuestion;
     public GameObject btnPlay;
+    public TMP_Text txtLeaderboardTimer;
 
     [Header("UI Đếm Ngược & Nút")]
     public Slider timerSlider;
@@ -148,6 +149,8 @@ public class LobbyController : MonoBehaviour
 
             if (timerSlider != null) timerSlider.value = currentTimer / 10f;
             if (txtTimer != null) txtTimer.text = Mathf.CeilToInt(currentTimer).ToString();
+
+            if (txtLeaderboardTimer != null) txtLeaderboardTimer.text = Mathf.CeilToInt(currentTimer).ToString();
         }
 
         // --- KIỂM TRA CÁC SỰ KIỆN TỪ SERVER ---
@@ -223,7 +226,10 @@ public class LobbyController : MonoBehaviour
             if (panelQuestion != null) panelQuestion.SetActive(false);
             if (panelLeaderboard != null) panelLeaderboard.SetActive(true);
 
-            string[] playersWithScores = pendingLeaderboardData.Split(',');
+            currentTimer = 5f;
+            isTimerRunning = true;
+
+            string[] playersWithScores = pendingLeaderboardData.Split('|');
             UpdateLeaderboardUI(playersWithScores, true);
         }
     }
@@ -235,6 +241,17 @@ public class LobbyController : MonoBehaviour
             Destroy(child.gameObject);
         }
 
+        float maxScore = 1f; 
+        if (hasScore && data.Length > 0 && data[0].Contains(":"))
+        {
+            string[] top1Parts = data[0].Split(':');
+            if (top1Parts.Length > 1)
+            {
+                float.TryParse(top1Parts[1], out maxScore);
+                if (maxScore <= 0) maxScore = 1f; 
+            }
+        }
+
         for (int i = 0; i < data.Length; i++)
         {
             if (string.IsNullOrEmpty(data[i])) continue;
@@ -243,12 +260,14 @@ public class LobbyController : MonoBehaviour
 
             string pName = data[i];
             string pScore = "0";
+            float currentScore = 0f;
 
             if (hasScore && data[i].Contains(":"))
             {
                 string[] parts = data[i].Split(':');
                 pName = parts[0];
                 pScore = parts[1];
+                float.TryParse(pScore, out currentScore);
             }
 
             TMP_Text nameText = newRow.transform.Find("TxtName")?.GetComponent<TMP_Text>();
@@ -259,6 +278,12 @@ public class LobbyController : MonoBehaviour
 
             TMP_Text scoreText = newRow.transform.Find("TxtScore")?.GetComponent<TMP_Text>();
             if (scoreText != null) scoreText.text = pScore;
+
+            Slider scoreSlider = newRow.transform.Find("ScoreSlider")?.GetComponent<Slider>();
+            if (scoreSlider != null)
+            {
+                scoreSlider.value = currentScore / maxScore;
+            }
         }
     }
 

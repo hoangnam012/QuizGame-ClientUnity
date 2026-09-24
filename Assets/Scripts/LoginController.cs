@@ -15,6 +15,8 @@ public class LoginController : MonoBehaviour
     {
         string playerName = nameInput.text.Trim();
         string serverIP = serverInput.text.Trim();
+
+        PlayerPrefs.SetString("Username", playerName);
         if (string.IsNullOrEmpty(playerName))
         {
             Debug.LogWarning("Chưa nhập tên kìa ông ơi!");
