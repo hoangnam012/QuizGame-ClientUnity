@@ -13,26 +13,21 @@ public class RoomController : MonoBehaviour
 
     private bool isRoomCreated = false;
 
-    // 1. Gắn vào các nút Lớp 1, 2, 3, 4, 5
     public void SelectClass(string className)
     {
         selectedClass = className;
         Debug.Log("Đã chọn: " + selectedClass);
     }
 
-    // 2. Gắn vào các nút Toán, Tiếng Việt, Tiếng Anh, Tư Duy
     public void SelectSubject(string subjectName)
     {
         selectedSubject = subjectName;
         Debug.Log("Đã chọn: " + selectedSubject);
     }
 
-    // 3. Gắn vào nút "Tạo phòng"
     public void OnBtnCreateRoomClicked()
     {
         string roomCode = roomCodeInput != null ? roomCodeInput.text.Trim() : "";
-
-        // Kiểm tra xem đã điền mã code và chọn đủ thông tin chưa
         if (string.IsNullOrEmpty(roomCode))
         {
             Debug.LogWarning("Ê, chưa nhập mã code phòng kìa!");
@@ -44,14 +39,11 @@ public class RoomController : MonoBehaviour
             return;
         }
 
-        // Đăng ký nhận phản hồi từ Server
         if (NetworkManager.Instance != null)
         {
             NetworkManager.Instance.OnMessageReceived -= HandleServerResponse;
             NetworkManager.Instance.OnMessageReceived += HandleServerResponse;
 
-            // Gửi gói tin lên Server kèm luôn cái mã code tự nhập
-            // Cú pháp: CREATE_ROOM:[Mã_Code]:[Lớp]:[Môn]
             string packet = $"CREATE_ROOM:{roomCode}:{selectedClass}:{selectedSubject}";
             NetworkManager.Instance.SendPacket(packet);
             Debug.Log($"[Gửi Server] {packet}");
@@ -77,7 +69,6 @@ public class RoomController : MonoBehaviour
         }
     }
 
-    // 4. Lắng nghe phản hồi từ Server
     private void HandleServerResponse(string message)
     {
         Debug.Log($"[RoomController Nhận] {message}");
@@ -100,7 +91,6 @@ public class RoomController : MonoBehaviour
         }
     }
 
-    // 5. Chuyển scene an toàn trên luồng chính
     private void Update()
     {
         if (isRoomCreated)
@@ -119,7 +109,6 @@ public class RoomController : MonoBehaviour
     }
 }
 
-// Giữ cả 2 tên class để tương thích tuyệt đối mọi nơi trong Unity
 public class RoomSetupController : RoomController
 {
 }

@@ -14,7 +14,6 @@ public class RoomUIController : MonoBehaviour
 
     private TMP_FontAsset mainFont;
 
-    // Sprite resources
     private Sprite bgSprite;
     private Sprite blurredBgSprite;
     private Sprite glassPanelRound;
@@ -28,7 +27,6 @@ public class RoomUIController : MonoBehaviour
     private Sprite selectionGlowPillSprite;
     private Sprite checkmarkBadgeSprite;
 
-    // UI interactive objects
     private GameObject[] classBtnObjects = new GameObject[5];
     private GameObject[] classGlowObjects = new GameObject[5];
     private GameObject[] classCheckObjects = new GameObject[5];
@@ -144,7 +142,6 @@ public class RoomUIController : MonoBehaviour
             if (mainFont == null) mainFont = fonts[0];
         }
 
-        // Sprites with 9-slice borders
         bgSprite = LoadSprite("download_bg", Vector4.zero);
         if (bgSprite == null) bgSprite = LoadSprite("download (3)", Vector4.zero);
 
@@ -182,15 +179,13 @@ public class RoomUIController : MonoBehaviour
         gr.offsetMin = Vector2.zero;
         gr.offsetMax = Vector2.zero;
 
-        // Mask with the rounded/pill shape
         Image maskImg = glassObj.AddComponent<Image>();
         maskImg.sprite = shapeSprite;
         maskImg.type = Image.Type.Sliced;
-        maskImg.raycastTarget = false; // NEVER BLOCK RAYCASTS!
+        maskImg.raycastTarget = false; 
         Mask mask = glassObj.AddComponent<Mask>();
         mask.showMaskGraphic = false;
 
-        // 1. Blurred Background layer (aligned with screen)
         if (blurredBgSprite != null)
         {
             GameObject blurObj = new GameObject("BlurredBackground", typeof(RectTransform), typeof(Image), typeof(FrostedGlassAligner));
@@ -202,7 +197,6 @@ public class RoomUIController : MonoBehaviour
             blurObj.GetComponent<FrostedGlassAligner>().Align();
         }
 
-        // 2. White Tint Layer (frosted milkiness)
         GameObject tintObj = new GameObject("GlassTint", typeof(RectTransform), typeof(Image));
         tintObj.transform.SetParent(glassObj.transform, false);
         RectTransform tintRect = tintObj.GetComponent<RectTransform>();
@@ -214,7 +208,6 @@ public class RoomUIController : MonoBehaviour
         tintImg.color = new Color(1f, 1f, 1f, whiteTint);
         tintImg.raycastTarget = false;
 
-        // 3. Border and Specular Sheen Layer
         GameObject borderObj = new GameObject("GlassBorder", typeof(RectTransform), typeof(Image));
         borderObj.transform.SetParent(glassObj.transform, false);
         RectTransform borderRect = borderObj.GetComponent<RectTransform>();
@@ -293,7 +286,6 @@ public class RoomUIController : MonoBehaviour
         rootRect.offsetMax = Vector2.zero;
         rootObj.transform.SetAsLastSibling();
 
-        // 1. Background Image (Full quality, sharp, no UI baked in)
         GameObject bgObj = new GameObject("BackgroundImage", typeof(RectTransform), typeof(Image));
         bgObj.transform.SetParent(rootRect, false);
         RectTransform bgRect = bgObj.GetComponent<RectTransform>();
@@ -305,7 +297,7 @@ public class RoomUIController : MonoBehaviour
         bgImg.sprite = bgSprite;
         bgImg.color = Color.white;
         bgImg.preserveAspect = false;
-        bgImg.raycastTarget = false; // Background must not block UI raycasts
+        bgImg.raycastTarget = false; 
 
         // 2. Back Button (← Quay về)
         BuildBackButton(rootRect);
@@ -395,7 +387,7 @@ public class RoomUIController : MonoBehaviour
         lbl.text = "Nhập mã code";
         lbl.fontSize = 34;
         lbl.fontStyle = FontStyles.Bold;
-        lbl.color = Color.white;
+        lbl.color = Color.black;
         lbl.alignment = TextAlignmentOptions.MidlineLeft;
         lbl.raycastTarget = false;
 
@@ -457,7 +449,7 @@ public class RoomUIController : MonoBehaviour
         phText.text = "Nhập mã của bạn";
         phText.fontSize = 26;
         phText.fontStyle = FontStyles.Normal;
-        phText.color = new Color(1f, 1f, 1f, 0.75f);
+        phText.color = Color.black;
         phText.alignment = TextAlignmentOptions.MidlineLeft;
         phText.raycastTarget = false;
 
@@ -474,7 +466,7 @@ public class RoomUIController : MonoBehaviour
         if (mainFont != null) mainText.font = mainFont;
         mainText.fontSize = 26;
         mainText.fontStyle = FontStyles.Bold;
-        mainText.color = Color.white;
+        mainText.color = Color.black;
         mainText.alignment = TextAlignmentOptions.MidlineLeft;
         mainText.raycastTarget = false;
 
@@ -520,7 +512,7 @@ public class RoomUIController : MonoBehaviour
         title.fontSize = 26;
         title.fontStyle = FontStyles.Bold;
         title.alignment = TextAlignmentOptions.Center;
-        title.color = Color.white;
+        title.color = Color.black;
         title.raycastTarget = false;
 
         // 5 Pastel Class Pills
@@ -634,7 +626,7 @@ public class RoomUIController : MonoBehaviour
         title.fontSize = 32;
         title.fontStyle = FontStyles.Bold;
         title.alignment = TextAlignmentOptions.Center;
-        title.color = Color.white;
+        title.color = Color.black;
         title.raycastTarget = false;
 
         // 2. 4 Cards (2x2) with Frosted Glass Panels

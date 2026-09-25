@@ -14,7 +14,6 @@ public class NetworkManager : MonoBehaviour
     private CancellationTokenSource _cancelToken;
     private bool _isConnected = false;
 
-    // Khai báo một sự kiện để truyền thông điệp từ mạng về UI
     public event Action<string> OnMessageReceived;
 
     private void Awake()
@@ -57,7 +56,6 @@ public class NetworkManager : MonoBehaviour
 
         try
         {
-            // THÊM: Đảm bảo mọi tin nhắn Unity gửi lên Server cũng có \n để chống dính chùm chiều ngược lại
             if (!message.EndsWith("\n")) message += "\n";
 
             byte[] data = Encoding.UTF8.GetBytes(message);
@@ -80,16 +78,12 @@ public class NetworkManager : MonoBehaviour
                 int bytes = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
                 if (bytes > 0)
                 {
-                    // 1. Chuyển mẻ byte nhận được thành chuỗi thô
                     string incomingData = Encoding.UTF8.GetString(buffer, 0, bytes);
 
-                    // 2. SỬA CỐT LÕI: Chẻ các gói tin dính chùm ra thành từng mảng riêng biệt dựa vào dấu \n
                     string[] packets = incomingData.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    // 3. Xử lý từng gói tin một
                     foreach (string packet in packets)
                     {
-                        // Dọn dẹp sạch sẽ ký tự thừa của gói tin này
                         string cleanPacket = packet.Replace("\0", string.Empty).Trim();
 
                         if (!string.IsNullOrEmpty(cleanPacket))
@@ -118,14 +112,12 @@ public class NetworkManager : MonoBehaviour
     }
     private void OnApplicationQuit()
     {
-        // Tự động chạy khi ông bấm Stop Play hoặc bấm X tắt game
         Debug.Log("[TCP] Đang chủ động cúp máy trước khi thoát...");
         Disconnect();
     }
 
     private void OnDestroy()
     {
-        // Phục vụ cho việc dọn dẹp nếu chuyển cảnh lỗi
         Disconnect();
     }
 }

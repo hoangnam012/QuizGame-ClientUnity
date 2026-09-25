@@ -73,10 +73,8 @@ public class LobbyController : MonoBehaviour
         NetworkManager.Instance.OnMessageReceived += HandleServerMessage;
         NetworkManager.Instance.SendPacket($"GET_LOBBY:{currentRoomCode}");
 
-        // Khởi tạo giao diện câu hỏi hoạt hình siêu tươi sáng, rõ màu 100%
         SetupKidQuizUI();
 
-        // Lưu màu gốc của 4 nút
         for (int i = 0; i < 4; i++)
         {
             if (answerButtons[i] != null)
@@ -140,17 +138,16 @@ public class LobbyController : MonoBehaviour
                 Button btnComp = answerButtons[i].GetComponent<Button>();
                 if (btnComp != null)
                 {
-                    btnComp.transition = Selectable.Transition.None; // Tắt ColorTint để Unity không làm mờ nút!
+                    btnComp.transition = Selectable.Transition.None; 
                     btnComp.interactable = false;
                 }
 
                 Image btnImg = answerButtons[i].GetComponent<Image>();
                 CanvasGroup cg = GetOrAddCanvasGroup(answerButtons[i]);
-                cg.alpha = 1.0f; // 100% ĐẬM MÀU RÕ RÀNG!
+                cg.alpha = 1.0f;
 
                 if (i + 1 == currentCorrectAnswer)
                 {
-                    // Nút ĐÚNG: Xanh lá neon tươi 100% rõ màu
                     if (btnImg != null && s_buttonCorrectSprite != null)
                     {
                         btnImg.sprite = s_buttonCorrectSprite;
@@ -159,7 +156,6 @@ public class LobbyController : MonoBehaviour
                 }
                 else if (i == chosenIdx)
                 {
-                    // Nút người chơi bấm bị SAI: Đỏ tươi 100% rõ màu
                     if (btnImg != null && s_buttonWrongSprite != null)
                     {
                         btnImg.sprite = s_buttonWrongSprite;
@@ -168,7 +164,6 @@ public class LobbyController : MonoBehaviour
                 }
                 else
                 {
-                    // Các nút còn lại: vẫn sáng rõ 100%, không bị mờ đục
                     if (btnImg != null && s_buttonNormalSprite != null)
                     {
                         btnImg.sprite = s_buttonNormalSprite;
@@ -181,7 +176,6 @@ public class LobbyController : MonoBehaviour
 
     void Update()
     {
-        // --- LOGIC ĐẾM NGƯỢC THỜI GIAN CHẠY ĐỘC LẬP ---
         if (isTimerRunning)
         {
             currentTimer -= Time.deltaTime;
@@ -197,7 +191,6 @@ public class LobbyController : MonoBehaviour
             if (txtLeaderboardTimer != null) txtLeaderboardTimer.text = Mathf.CeilToInt(currentTimer).ToString();
         }
 
-        // --- KIỂM TRA CÁC SỰ KIỆN TỪ SERVER ---
         if (hasNewData)
         {
             hasNewData = false;
@@ -219,7 +212,6 @@ public class LobbyController : MonoBehaviour
             isTimerRunning = true;
             mySelectedAnswerIndex = -1;
 
-            // Reset toàn bộ 4 nút về trạng thái bình thường (Khối hồng kẹo ngọt siêu sáng rõ 100%)
             for (int i = 0; i < 4; i++)
             {
                 if (answerButtons[i] != null)
@@ -274,7 +266,7 @@ public class LobbyController : MonoBehaviour
 
                     Image btnImg = answerButtons[i].GetComponent<Image>();
                     CanvasGroup cg = GetOrAddCanvasGroup(answerButtons[i]);
-                    cg.alpha = 1.0f; // 100% RÕ MÀU!
+                    cg.alpha = 1.0f; 
 
                     if (i + 1 == correctIndexToReveal)
                     {
